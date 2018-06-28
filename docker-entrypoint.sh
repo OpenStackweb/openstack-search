@@ -4,9 +4,9 @@ set -x
 
 service mongodb start
 
-service nginx start
-
 service solr start
+
+service cron start
 
 # run crawler first time
 
