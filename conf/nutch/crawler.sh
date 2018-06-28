@@ -9,9 +9,8 @@ ITERATIONS=$4
 DOMAIN=$5
 TOP=$6
 
-echo "trying to get site map for $DOMAIN..."
-
-curl $DOMAIN/sitemap.xml | grep -e loc | sed 's|<loc>\(.*\)<\/loc>$|\1|g' > $SEEDS/sitemap.txt
+#echo "trying to get site map for $DOMAIN..."
+#curl $DOMAIN/sitemap.xml | grep -e loc | sed 's|<loc>\(.*\)<\/loc>$|\1|g' > $SEEDS/sitemap.txt
 
 echo "crawling for core $CORE crawl_id $CRAWL_ID seed $SEEDS";
 

@@ -1,7 +1,7 @@
 FROM ubuntu:18.04
 
 RUN apt-get update && \
-  apt-get -y install git wget gnupg apt-utils mongodb nginx software-properties-common tar zip curl lsof nano
+  apt-get -y install git wget gnupg apt-utils mongodb software-properties-common tar zip curl lsof nano
 RUN add-apt-repository ppa:webupd8team/java && apt-get update
 RUN echo "oracle-java8-installer shared/accepted-oracle-license-v1-1 select true" | debconf-set-selections
 RUN apt-get install -y oracle-java8-installer
@@ -78,9 +78,6 @@ RUN chmod 777 /usr/local/bin/docker-entrypoint.sh \
 ENTRYPOINT ["docker-entrypoint.sh"]
 CMD ["bin/bash"]
 
-EXPOSE 27017
-EXPOSE 80 
-EXPOSE 443	
 EXPOSE 8983
 
 
