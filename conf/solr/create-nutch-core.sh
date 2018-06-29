@@ -3,8 +3,7 @@ set -e
 set -x
 
 CORE=$1
-BASE_URL=$2
-CRAWL_ID=$3
+SEED_URL=$2
 
 if [ -z "$CORE" ]
 then
@@ -12,16 +11,18 @@ then
     exit -1
 fi
 
-if [ -z "$BASE_URL" ]
+if [ -z "$SEED_URL" ]
 then
-    echo "BASE_URL not set, exiting ..."
+    echo "SEED_URL not set, exiting ..."
     exit -1
 fi
 
-if [ -z "$CRAWL_ID" ]
-then
-    echo "CRAWL_ID not set, exiting ..."
-    exit -1
+CRAWLID_FILE=~/.lastcrawlid
+
+if [ -f $CRAWLID_FILE ]; then
+   . $CRAWLID_FILE
+else
+   touch $CRAWLID_FILE
 fi
 
 echo "creating core ${CORE}";
@@ -35,11 +36,14 @@ echo "setting nutch for core ${CORE}"
 
 mkdir -p ${NUTCH_HOME}/urls/${CORE}
 touch ${NUTCH_HOME}/urls/${CORE}/seeds.txt
-echo "$BASE_URL" >> ${NUTCH_HOME}/urls/${CORE}/seeds.txt
+echo "${SEED_URL}" >> ${NUTCH_HOME}/urls/${CORE}/seeds.txt
 
-echo "adding to nutch cron tab..."
-echo "*/20 * * * * root . /root/env.sh && ${NUTCH_HOME}/crawler.sh ${CORE} ${CRAWL_ID} ${NUTCH_HOME}/urls/${CORE} 10 \"\" 50 >> /var/log/nutch_cron_${CORE}.log 2>&1
+echo "adding to nutch cron tab ..."
+echo "*/20 * * * * root . /root/env.sh && ${NUTCH_HOME}/crawler.sh ${CORE} ${LAST_CRAWL_ID} ${NUTCH_HOME}/urls/${CORE} 10 \"\" 50 >> /var/log/nutch_cron_${CORE}.log 2>&1
 " >> /etc/cron.d/nutch-tab
+
+LAST_CRAWL_ID=$((LAST_CRAWL_ID+1))
+echo "LAST_CRAWL_ID=${LAST_CRAWL_ID}" > $CRAWLID_FILE
 
 service solr restart
 

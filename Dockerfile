@@ -62,6 +62,7 @@ RUN ${SOLR_BIN}/solr start && \
     ${SOLR_BIN}/solr create_core -c superuser-openstack -d basic_configs && \
     ${SOLR_BIN}/solr stop
 
+ENV LAST_CRAWL_ID=4
 # www
 COPY conf/solr/default-core-config/schema.xml ${SOLR_HOME}/www-openstack/conf/schema.xml
 COPY conf/solr/default-core-config/solrconfig.xml ${SOLR_HOME}/www-openstack/conf/solrconfig.xml

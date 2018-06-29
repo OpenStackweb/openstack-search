@@ -23,4 +23,4 @@ by default creates 3 cores
 
 # create new core on existing container instance
 
-docker exec -it openstack-search1 create-nutch-core.sh new-core-name "http://test.com" CRAWL_ID
+docker exec -it openstack-search1 create-nutch-core.sh $NEW_CORE_NAME $BASE_SEED_URL
