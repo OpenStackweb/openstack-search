@@ -20,3 +20,7 @@ by default creates 3 cores
 * docs site
 * super users
 
+
+# create new core on existing container instance
+
+docker exec -it openstack-search1 create-nutch-core.sh new-core-name "http://test.com" CRAWL_ID

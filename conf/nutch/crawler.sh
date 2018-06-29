@@ -51,9 +51,9 @@ for i in $(seq ${ITERATIONS}); do
       echo "doing updatedb"
       $NUTCH_HOME/runtime/local/bin/nutch updatedb $commonOptions $batchId -crawlId $CRAWL_ID
       echo "doing solrindex"
-      $NUTCH_HOME/runtime/local/bin/nutch solrindex $commonOptions http://localhost:$SOLR_PORT/solr/$CORE -all -crawlId $CRAWL_ID
+      $NUTCH_HOME/runtime/local/bin/nutch solrindex http://localhost:$SOLR_PORT/solr/$CORE -all -crawlId $CRAWL_ID
       echo "doing solrdedup"
-      $NUTCH_HOME/runtime/local/bin/nutch solrdedup $commonOptions http://localhost:$SOLR_PORT/solr/$CORE
+      $NUTCH_HOME/runtime/local/bin/nutch solrdedup http://localhost:$SOLR_PORT/solr/$CORE
 done
 
 echo 'Done with all iterations'

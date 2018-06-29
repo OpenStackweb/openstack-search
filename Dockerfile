@@ -43,6 +43,14 @@ RUN  wget http://archive.apache.org/dist/lucene/solr/${SOLR_VERSION}/solr-${SOLR
      chmod 777 /install_solr_service.sh && \
      ./install_solr_service.sh /solr-${SOLR_VERSION}.tgz
 
+# copy default core configurations
+
+ENV CONF_HOME=/var/solr-default-core-config
+RUN mkdir -p ${CONF_HOME}
+COPY conf/solr/default-core-config/schema.xml ${CONF_HOME}/schema.xml
+COPY conf/solr/default-core-config/solrconfig.xml ${CONF_HOME}/solrconfig.xml
+RUN chown solr:solr -R ${CONF_HOME}
+
 USER solr
 
 ENV SOLR_HOME=/var/solr/data
@@ -53,8 +61,6 @@ RUN ${SOLR_BIN}/solr start && \
     ${SOLR_BIN}/solr create_core -c docs-openstack -d basic_configs && \
     ${SOLR_BIN}/solr create_core -c superuser-openstack -d basic_configs && \
     ${SOLR_BIN}/solr stop
-
-# copy default core configurations
 
 # www
 COPY conf/solr/default-core-config/schema.xml ${SOLR_HOME}/www-openstack/conf/schema.xml
@@ -69,7 +75,6 @@ RUN rm ${SOLR_HOME}/docs-openstack/conf/managed-schema
 COPY conf/solr/default-core-config/schema.xml ${SOLR_HOME}/superuser-openstack/conf/schema.xml
 COPY conf/solr/default-core-config/solrconfig.xml ${SOLR_HOME}/superuser-openstack/conf/solrconfig.xml
 RUN rm ${SOLR_HOME}/superuser-openstack/conf/managed-schema
-
 
 VOLUME ${SOLR_HOME}
 
@@ -91,8 +96,14 @@ RUN printenv | sed 's/^\([a-zA-Z0-9_]*\)=\(.*\)$/export \1="\2"/g' > /root/env.s
 
 # entry point
 COPY docker-entrypoint.sh /usr/local/bin/
+COPY conf/solr/create-nutch-core.sh /usr/local/bin
+
 RUN chmod 777 /usr/local/bin/docker-entrypoint.sh \
     && ln -s /usr/local/bin/docker-entrypoint.sh /
+
+RUN chmod 777 /usr/local/bin/create-nutch-core.sh \
+    && ln -s /usr/local/bin/create-nutch-core.sh /
+
 ENTRYPOINT ["docker-entrypoint.sh"]
 CMD ["bin/bash"]
 
