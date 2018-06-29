@@ -15,10 +15,15 @@ RUN wget http://www-eu.apache.org/dist/nutch/2.3.1/apache-nutch-${NUTCH_VERSION}
     tar xvfz apache-nutch-${NUTCH_VERSION}-src.tar.gz
 ENV NUTCH_HOME /apache-nutch-${NUTCH_VERSION}
 COPY conf/nutch/nutch-site.xml $NUTCH_HOME/conf/nutch-site.xml
-COPY conf/nutch/gora.properties $NUTCH_HOME/conf/gora.properties
+COPY conf/nutch/conf/gora.properties $NUTCH_HOME/conf/gora.properties
+COPY conf/nutch/conf/nutch-default.xml $NUTCH_HOME/conf/nutch-default.xml
 COPY conf/nutch/ivy/ivy.xml $NUTCH_HOME/ivy/ivy.xml
 RUN mkdir -p $NUTCH_HOME/urls/www
 COPY conf/nutch/seeds/www.txt $NUTCH_HOME/urls/www/seeds.txt
+RUN mkdir -p $NUTCH_HOME/urls/docs
+COPY conf/nutch/seeds/docs.txt $NUTCH_HOME/urls/docs/seeds.txt
+RUN mkdir -p $NUTCH_HOME/urls/superuser
+COPY conf/nutch/seeds/superuser.txt $NUTCH_HOME/urls/superuser/seeds.txt
 COPY conf/nutch/crawler.sh $NUTCH_HOME/crawler.sh
 RUN chmod 777 $NUTCH_HOME/crawler.sh
 RUN cd $NUTCH_HOME && ant runtime
@@ -45,15 +50,28 @@ ENV SOLR_BIN=/opt/solr/bin
 
 RUN ${SOLR_BIN}/solr start && \	
     ${SOLR_BIN}/solr create_core -c www-openstack -d basic_configs && \
+    ${SOLR_BIN}/solr create_core -c docs-openstack -d basic_configs && \
+    ${SOLR_BIN}/solr create_core -c superuser-openstack -d basic_configs && \
     ${SOLR_BIN}/solr stop
 
 # copy default core configurations
 
-COPY conf/solr/www-openstack/schema.xml ${SOLR_HOME}/www-openstack/conf/schema.xml
-COPY conf/solr/www-openstack/solrconfig.xml ${SOLR_HOME}/www-openstack/conf/solrconfig.xml
+# www
+COPY conf/solr/default-core-config/schema.xml ${SOLR_HOME}/www-openstack/conf/schema.xml
+COPY conf/solr/default-core-config/solrconfig.xml ${SOLR_HOME}/www-openstack/conf/solrconfig.xml
 RUN rm ${SOLR_HOME}/www-openstack/conf/managed-schema
+# docs
+COPY conf/solr/default-core-config/schema.xml ${SOLR_HOME}/docs-openstack/conf/schema.xml
+COPY conf/solr/default-core-config/solrconfig.xml ${SOLR_HOME}/docs-openstack/conf/solrconfig.xml
+RUN rm ${SOLR_HOME}/docs-openstack/conf/managed-schema
 
-VOLUME ${SOLR_HOME}/www-openstack
+# super user
+COPY conf/solr/default-core-config/schema.xml ${SOLR_HOME}/superuser-openstack/conf/schema.xml
+COPY conf/solr/default-core-config/solrconfig.xml ${SOLR_HOME}/superuser-openstack/conf/solrconfig.xml
+RUN rm ${SOLR_HOME}/superuser-openstack/conf/managed-schema
+
+
+VOLUME ${SOLR_HOME}
 
 USER root
 

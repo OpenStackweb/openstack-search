@@ -1,2 +1,4 @@
 SHELL=/bin/bash 
-*/5 * * * * root . /root/env.sh && $NUTCH_HOME/crawler.sh www-openstack 1 $NUTCH_HOME/urls/www 10 https://www.openstack.org 50 >> /var/log/nutch_cron.log 2>&1
+*/20 * * * * root . /root/env.sh && $NUTCH_HOME/crawler.sh www-openstack 1 $NUTCH_HOME/urls/www 10 https://www.openstack.org 50 >> /var/log/nutch_cron_www.log 2>&1
+*/20 * * * * root . /root/env.sh && $NUTCH_HOME/crawler.sh docs-openstack 2 $NUTCH_HOME/urls/docs 10 https:/docs.openstack 50 >> /var/log/nutch_cron_docs.log 2>&1
+*/20 * * * * root . /root/env.sh && $NUTCH_HOME/crawler.sh superuser-openstack 3 $NUTCH_HOME/urls/superuser 10 "" 50 >> /var/log/nutch_cron_superuser.log 2>&1
