@@ -63,6 +63,9 @@ RUN ${SOLR_BIN}/solr start && \
     ${SOLR_BIN}/solr stop
 
 ENV LAST_CRAWL_ID=4
+ENV DEFAULT_TOP=1000
+ENV DEFAULT_DEPTH=50
+
 # www
 COPY conf/solr/default-core-config/schema.xml ${SOLR_HOME}/www-openstack/conf/schema.xml
 COPY conf/solr/default-core-config/solrconfig.xml ${SOLR_HOME}/www-openstack/conf/solrconfig.xml
