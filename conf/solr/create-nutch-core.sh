@@ -39,7 +39,8 @@ touch ${NUTCH_HOME}/urls/${CORE}/seeds.txt
 echo "${SEED_URL}" >> ${NUTCH_HOME}/urls/${CORE}/seeds.txt
 
 echo "adding to nutch cron tab ..."
-echo "*/20 * * * * root . /root/env.sh && ${NUTCH_HOME}/crawler.sh ${CORE} ${LAST_CRAWL_ID} ${NUTCH_HOME}/urls/${CORE} $DEFAULT_DEPTH \"\" $DEFAULT_TOP >> /var/log/nutch_cron_${CORE}.log 2>&1
+# run each 6 hours
+echo "0 */6 * * * root . /root/env.sh && ${NUTCH_HOME}/crawler.sh ${CORE} ${LAST_CRAWL_ID} ${NUTCH_HOME}/urls/${CORE} $DEFAULT_DEPTH \"\" $DEFAULT_TOP >> /var/log/nutch_cron_${CORE}.log 2>&1
 " >> /etc/cron.d/nutch-tab
 
 LAST_CRAWL_ID=$((LAST_CRAWL_ID+1))
