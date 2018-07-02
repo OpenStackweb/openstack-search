@@ -124,6 +124,10 @@
     -->
     <!-- Uncomment this to use MongoDB as Gora backend. -->
     <dependency org="org.apache.gora" name="gora-mongodb" rev="0.6.1" conf="*->default" />
+    <!--Nutch uses mongo-java-driver-2.13.1.jar by default this update to a newer version to fix
+        timeout issues
+    -->
+    <dependency org="org.mongodb" name="mongo-java-driver" rev="2.14.3"/>
     <!-- Uncomment this to use Solr as Gora backend. -->
     <!--
     <dependency org="org.apache.gora" name="gora-solr" rev="0.6.1" conf="*->default" />

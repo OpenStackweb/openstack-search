@@ -9,9 +9,10 @@ ENV JAVA_HOME /usr/lib/jvm/java-8-oracle/jre/
 RUN apt-get -y install ant
 
 # nutch
+
 ARG NUTCH_VERSION=2.3.1
 
-RUN wget http://www-eu.apache.org/dist/nutch/2.3.1/apache-nutch-${NUTCH_VERSION}-src.tar.gz && \
+RUN wget http://www-eu.apache.org/dist/nutch/${NUTCH_VERSION}/apache-nutch-${NUTCH_VERSION}-src.tar.gz && \
     tar xvfz apache-nutch-${NUTCH_VERSION}-src.tar.gz
 ENV NUTCH_HOME /apache-nutch-${NUTCH_VERSION}
 COPY conf/nutch/nutch-site.xml $NUTCH_HOME/conf/nutch-site.xml
@@ -29,6 +30,7 @@ RUN chmod 777 $NUTCH_HOME/crawler.sh
 RUN cd $NUTCH_HOME && ant runtime
 
 # mongo config from mongodb.conf
+
 RUN mkdir -p /data/db /data/configdb \
 	&& chown -R mongodb:mongodb /data/db /data/configdb
 VOLUME /data/db /data/configdb
@@ -37,6 +39,10 @@ VOLUME /data/db /data/configdb
 
 ARG SOLR_VERSION=6.5.1
 ENV SOLR_PORT=8983
+ENV SOLR_HOME=/var/solr/data
+ENV SOLR_BIN=/opt/solr/bin
+ENV SOLR_JAVA_MEM="-Xms2g -Xmx2g"
+
 RUN  wget http://archive.apache.org/dist/lucene/solr/${SOLR_VERSION}/solr-${SOLR_VERSION}.tgz && \
      tar xzf /solr-${SOLR_VERSION}.tgz && \
      cp /solr-${SOLR_VERSION}/bin/install_solr_service.sh /install_solr_service.sh && \	
@@ -53,9 +59,6 @@ RUN chown solr:solr -R ${CONF_HOME}
 
 USER solr
 
-ENV SOLR_HOME=/var/solr/data
-ENV SOLR_BIN=/opt/solr/bin
-
 RUN ${SOLR_BIN}/solr start && \	
     ${SOLR_BIN}/solr create_core -c www-openstack -d basic_configs && \
     ${SOLR_BIN}/solr create_core -c docs-openstack -d basic_configs && \
@@ -64,7 +67,7 @@ RUN ${SOLR_BIN}/solr start && \
 
 ENV LAST_CRAWL_ID=4
 ENV DEFAULT_TOP=1000
-ENV DEFAULT_DEPTH=50
+ENV DEFAULT_DEPTH=60
 
 # www
 COPY conf/solr/default-core-config/schema.xml ${SOLR_HOME}/www-openstack/conf/schema.xml

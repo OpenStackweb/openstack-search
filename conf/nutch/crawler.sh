@@ -9,6 +9,8 @@ ITERATIONS=$4
 DOMAIN=$5
 TOP=$6
 
+echo "CORE ${CORE} CRAWL_ID ${CRAWL_ID} SEEDS ${SEEDS} DEPTH ${ITERATIONS} DOMAIN ${DOMAIN} TOP ${TOP}";
+
 #############################################
 # MODIFY THE PARAMETERS BELOW TO YOUR NEEDS #
 #############################################
