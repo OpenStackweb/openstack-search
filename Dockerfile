@@ -14,20 +14,40 @@ ARG NUTCH_VERSION=2.3.1
 
 RUN wget http://www-eu.apache.org/dist/nutch/${NUTCH_VERSION}/apache-nutch-${NUTCH_VERSION}-src.tar.gz && \
     tar xvfz apache-nutch-${NUTCH_VERSION}-src.tar.gz
+
 ENV NUTCH_HOME /apache-nutch-${NUTCH_VERSION}
+ENV NUTCH_LOCAL ${NUTCH_HOME}/runtime/local
+ENV NUTCH_LOCAL_CONF ${NUTCH_LOCAL}/conf
+ENV NUTCH_LOCAL_CONF_TPL ${NUTCH_LOCAL}/conf-template
+
 COPY conf/nutch/nutch-site.xml $NUTCH_HOME/conf/nutch-site.xml
 COPY conf/nutch/conf/gora.properties $NUTCH_HOME/conf/gora.properties
 COPY conf/nutch/conf/nutch-default.xml $NUTCH_HOME/conf/nutch-default.xml
 COPY conf/nutch/ivy/ivy.xml $NUTCH_HOME/ivy/ivy.xml
-RUN mkdir -p $NUTCH_HOME/urls/www
-COPY conf/nutch/seeds/www.txt $NUTCH_HOME/urls/www/seeds.txt
-RUN mkdir -p $NUTCH_HOME/urls/docs
-COPY conf/nutch/seeds/docs.txt $NUTCH_HOME/urls/docs/seeds.txt
-RUN mkdir -p $NUTCH_HOME/urls/superuser
-COPY conf/nutch/seeds/superuser.txt $NUTCH_HOME/urls/superuser/seeds.txt
+
 COPY conf/nutch/crawler.sh $NUTCH_HOME/crawler.sh
 RUN chmod 777 $NUTCH_HOME/crawler.sh
 RUN cd $NUTCH_HOME && ant runtime
+
+RUN mkdir -p $NUTCH_LOCAL_CONF_TPL
+RUN cp $NUTCH_LOCAL_CONF/* $NUTCH_LOCAL_CONF_TPL
+
+RUN mkdir -p $NUTCH_HOME/urls/www
+COPY conf/nutch/seeds/www.txt $NUTCH_HOME/urls/www/seeds.txt
+RUN mkdir -p $NUTCH_LOCAL_CONF/www && cp $NUTCH_LOCAL_CONF_TPL/* $NUTCH_LOCAL_CONF/www
+
+RUN mkdir -p $NUTCH_HOME/urls/blog
+COPY conf/nutch/seeds/blog.txt $NUTCH_HOME/urls/blog/seeds.txt
+RUN mkdir -p $NUTCH_LOCAL_CONF/blog && cp $NUTCH_LOCAL_CONF_TPL/* $NUTCH_LOCAL_CONF/blog
+COPY conf/nutch/conf/blog/regex-urlfilter.txt $NUTCH_LOCAL_CONF/blog/regex-urlfilter.txt
+
+RUN mkdir -p $NUTCH_HOME/urls/docs
+COPY conf/nutch/seeds/docs.txt $NUTCH_HOME/urls/docs/seeds.txt
+RUN mkdir -p $NUTCH_LOCAL_CONF/docs && cp $NUTCH_LOCAL_CONF_TPL/* $NUTCH_LOCAL_CONF/docs
+
+RUN mkdir -p $NUTCH_HOME/urls/superuser
+COPY conf/nutch/seeds/superuser.txt $NUTCH_HOME/urls/superuser/seeds.txt
+RUN mkdir -p $NUTCH_LOCAL_CONF/superuser && cp $NUTCH_LOCAL_CONF_TPL/* $NUTCH_LOCAL_CONF/superuser
 
 # mongo config from mongodb.conf
 
@@ -61,11 +81,12 @@ USER solr
 
 RUN ${SOLR_BIN}/solr start && \	
     ${SOLR_BIN}/solr create_core -c www-openstack -d basic_configs && \
+    ${SOLR_BIN}/solr create_core -c blog -d basic_configs && \
     ${SOLR_BIN}/solr create_core -c docs-openstack -d basic_configs && \
     ${SOLR_BIN}/solr create_core -c superuser-openstack -d basic_configs && \
     ${SOLR_BIN}/solr stop
 
-ENV LAST_CRAWL_ID=4
+ENV LAST_CRAWL_ID=5
 ENV DEFAULT_TOP=1000
 ENV DEFAULT_DEPTH=60
 
@@ -73,6 +94,12 @@ ENV DEFAULT_DEPTH=60
 COPY conf/solr/default-core-config/schema.xml ${SOLR_HOME}/www-openstack/conf/schema.xml
 COPY conf/solr/default-core-config/solrconfig.xml ${SOLR_HOME}/www-openstack/conf/solrconfig.xml
 RUN rm ${SOLR_HOME}/www-openstack/conf/managed-schema
+
+#blog
+COPY conf/solr/default-core-config/schema.xml ${SOLR_HOME}/blog/conf/schema.xml
+COPY conf/solr/default-core-config/solrconfig.xml ${SOLR_HOME}/blog/conf/solrconfig.xml
+RUN rm ${SOLR_HOME}/blog/conf/managed-schema
+
 # docs
 COPY conf/solr/default-core-config/schema.xml ${SOLR_HOME}/docs-openstack/conf/schema.xml
 COPY conf/solr/default-core-config/solrconfig.xml ${SOLR_HOME}/docs-openstack/conf/solrconfig.xml

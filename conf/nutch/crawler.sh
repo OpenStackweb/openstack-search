@@ -8,8 +8,9 @@ SEEDS=$3
 ITERATIONS=$4
 DOMAIN=$5
 TOP=$6
+CONF_DIR=$7
 
-echo "CORE ${CORE} CRAWL_ID ${CRAWL_ID} SEEDS ${SEEDS} DEPTH ${ITERATIONS} DOMAIN ${DOMAIN} TOP ${TOP}";
+echo "CORE ${CORE} CRAWL_ID ${CRAWL_ID} SEEDS ${SEEDS} DEPTH ${ITERATIONS} DOMAIN ${DOMAIN} TOP ${TOP} CONF_DIR ${CONF_DIR}";
 
 #############################################
 # MODIFY THE PARAMETERS BELOW TO YOUR NEEDS #
@@ -38,24 +39,39 @@ else
     curl $DOMAIN/sitemap.xml | grep -e loc | sed 's|<loc>\(.*\)<\/loc>$|\1|g' > $SEEDS/sitemap.txt
 fi
 echo "crawling for core $CORE crawl_id $CRAWL_ID seed $SEEDS";
-$NUTCH_HOME/runtime/local/bin/nutch inject $SEEDS -crawlId $CRAWL_ID
+NUTCH_CONF_DIR=$CONF_DIR $NUTCH_HOME/runtime/local/bin/nutch inject $SEEDS -crawlId $CRAWL_ID
 
 for i in $(seq ${ITERATIONS}); do
       echo "Iteration $i"
 
       batchId=`date +%s`-$RANDOM
+
       echo "doing generate"
-      $NUTCH_HOME/runtime/local/bin/nutch generate $commonOptions -topN $TOP -noNorm -noFilter -crawlId $CRAWL_ID -batchId $batchId
+      NUTCH_CONF_DIR=$CONF_DIR $NUTCH_HOME/runtime/local/bin/nutch generate $commonOptions -topN $TOP -noNorm -noFilter -crawlId $CRAWL_ID -batchId $batchId
+      RETCODE=$?
+      if [ $RETCODE -eq 0 ]; then
+        : # ok: no error
+      elif [ $RETCODE -eq 1 ]; then
+        echo "Generate returned 1 (no new segments created)"
+        echo "Escaping loop: no more URLs to fetch now"
+        break
+      else
+        echo "Error running:"
+        echo "generate!"
+        echo "Failed with exit value $RETCODE."
+        exit $RETCODE
+      fi
+
       echo "doing fetch"
-      $NUTCH_HOME/runtime/local/bin/nutch fetch $commonOptions -D fetcher.timelimit.mins=$timeLimitFetch $batchId -crawlId $CRAWL_ID -threads 50
+      NUTCH_CONF_DIR=$CONF_DIR $NUTCH_HOME/runtime/local/bin/nutch fetch $commonOptions -D fetcher.timelimit.mins=$timeLimitFetch $batchId -crawlId $CRAWL_ID -threads 50
       echo "doing parse"
-      $NUTCH_HOME/runtime/local/bin/nutch parse $commonOptions $skipRecordsOptions $batchId -crawlId $CRAWL_ID
+      NUTCH_CONF_DIR=$CONF_DIR $NUTCH_HOME/runtime/local/bin/nutch parse $commonOptions $skipRecordsOptions $batchId -crawlId $CRAWL_ID
       echo "doing updatedb"
-      $NUTCH_HOME/runtime/local/bin/nutch updatedb $commonOptions $batchId -crawlId $CRAWL_ID
+      NUTCH_CONF_DIR=$CONF_DIR $NUTCH_HOME/runtime/local/bin/nutch updatedb $commonOptions $batchId -crawlId $CRAWL_ID
       echo "doing solrindex"
-      $NUTCH_HOME/runtime/local/bin/nutch solrindex http://localhost:$SOLR_PORT/solr/$CORE -all -crawlId $CRAWL_ID
+      NUTCH_CONF_DIR=$CONF_DIR $NUTCH_HOME/runtime/local/bin/nutch solrindex http://localhost:$SOLR_PORT/solr/$CORE -all -crawlId $CRAWL_ID
       echo "doing solrdedup"
-      $NUTCH_HOME/runtime/local/bin/nutch solrdedup http://localhost:$SOLR_PORT/solr/$CORE
+      NUTCH_CONF_DIR=$CONF_DIR $NUTCH_HOME/runtime/local/bin/nutch solrdedup http://localhost:$SOLR_PORT/solr/$CORE
 done
 
 echo 'Done with all iterations'
