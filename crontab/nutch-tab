@@ -1,5 +1,6 @@
-SHELL=/bin/bash 
-0 */6 * * * root . /root/env.sh && $NUTCH_HOME/crawler.sh www-openstack 1 $NUTCH_HOME/urls/www $DEFAULT_DEPTH https://www.openstack.org $DEFAULT_TOP $NUTCH_LOCAL_CONF/www >> /var/log/nutch_cron_www.log 2>&1
-0 */6 * * * root . /root/env.sh && $NUTCH_HOME/crawler.sh docs-openstack 2 $NUTCH_HOME/urls/docs 250 https://docs.openstack.org 10000 $NUTCH_LOCAL_CONF/docs >> /var/log/nutch_cron_docs.log 2>&1
-0 */6 * * * root . /root/env.sh && $NUTCH_HOME/crawler.sh superuser-openstack 3 $NUTCH_HOME/urls/superuser $DEFAULT_DEPTH "" $DEFAULT_TOP $NUTCH_LOCAL_CONF/superuser >> /var/log/nutch_cron_superuser.log 2>&1
-0 */6 * * * root . /root/env.sh && $NUTCH_HOME/crawler.sh blog 4 $NUTCH_HOME/urls/blog 50 "" 10000 $NUTCH_LOCAL_CONF/blog >> /var/log/nutch_cron_blog.log 2>&1
+SHELL=/bin/bash
+
+0 */6 * * * root . /root/env.sh && /usr/bin/flock -xn /tmp/www-openstack.lockfile $NUTCH_HOME/crawler.sh www-openstack 1 $NUTCH_HOME/urls/www $DEFAULT_DEPTH https://www.openstack.org $DEFAULT_TOP $NUTCH_LOCAL_CONF/www >> /var/log/nutch_cron_www.log 2>&1
+0 */6 * * * root . /root/env.sh && /usr/bin/flock -xn /tmp/docs-openstack.lockfile $NUTCH_HOME/crawler.sh docs-openstack 2 $NUTCH_HOME/urls/docs 50 https://docs.openstack.org 10000 $NUTCH_LOCAL_CONF/docs >> /var/log/nutch_cron_docs.log 2>&1
+0 */6 * * * root . /root/env.sh && /usr/bin/flock -xn /tmp/superuser-openstack.lockfile $NUTCH_HOME/crawler.sh superuser-openstack 3 $NUTCH_HOME/urls/superuser $DEFAULT_DEPTH "" $DEFAULT_TOP $NUTCH_LOCAL_CONF/superuser >> /var/log/nutch_cron_superuser.log 2>&1
+0 */6 * * * root . /root/env.sh && /usr/bin/flock -xn /tmp/blog-openstack.lockfile $NUTCH_HOME/crawler.sh blog 4 $NUTCH_HOME/urls/blog 50 "" 10000 $NUTCH_LOCAL_CONF/blog >> /var/log/nutch_cron_blog.log 2>&1

@@ -15,9 +15,14 @@ docker network create -d bridge --subnet 192.168.0.0/24 --gateway 192.168.0.1 do
 ````
 
 * run container
+
 ````
-docker run --name openstack-search1 -p 32769:8983 -it -d -m 8GB --oom-kill-disable \
+docker run --name openstack-search1 \
+-v mongo-data-db:/data/db \
+-v mongo-data-config-db:/data/configdb \
+-v solr-data:/var/solr/data \
 --net=docker-bridge \
+-p 32769:8983 -it -d -m 8GB --oom-kill-disable \
 --restart=always openstack-search
 ````
 
