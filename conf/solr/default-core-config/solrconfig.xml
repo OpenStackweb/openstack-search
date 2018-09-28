@@ -858,18 +858,20 @@
   </requestHandler>
   
   <requestHandler name="/suggest" class="solr.SearchHandler" startup="lazy" >
-  <lst name="defaults">
-  <str name="suggest">true</str>
-  <str name="suggest.dictionary">fuzzyTitle</str>
-  <str name="suggest.dictionary">infixTitle</str>
-  <str name="suggest.dictionary">infixUrl</str>
-  <str name="suggest.onlyMorePopular">true</str>
-  <str name="suggest.count">10</str>
-  <str name="suggest.collate">true</str>
-  </lst>
-  <arr name="components">
-  <str>suggest</str>
-  </arr>
+    <lst name="defaults">
+      <str name="suggest">true</str>
+      <str name="suggest.dictionary">fuzzyTitle</str>
+      <str name="suggest.dictionary">infixTitle</str>
+      <str name="suggest.dictionary">fuzzyMetaDescription</str>
+      <str name="suggest.dictionary">infixMetaDescription</str>
+      <str name="suggest.dictionary">infixUrl</str>
+      <str name="suggest.onlyMorePopular">true</str>
+      <str name="suggest.count">10</str>
+      <str name="suggest.collate">true</str>
+    </lst>
+    <arr name="components">
+      <str>suggest</str>
+    </arr>
   </requestHandler>
   
   <!-- Search Components
@@ -920,39 +922,61 @@
   -->
   
   <searchComponent name="suggest" class="solr.SuggestComponent">
-  <lst name="suggester">
-  <str name="name">fuzzyTitle</str>
-  <str name="lookupImpl">FuzzyLookupFactory</str>
-  <str name="storeDir">fuzzy_title</str>
-  <str name="dictionaryImpl">DocumentDictionaryFactory</str>
-  <str name="field">title</str>
-  <str name="payloadField">url</str>
-  <str name="suggestAnalyzerFieldType">suggest_text</str>
-  <str name="buildOnStartup">false</str>
-  <str name="buildOnCommit">false</str>
-  </lst>
-  <lst name="suggester">
-  <str name="name">infixTitle</str>
-  <str name="lookupImpl">AnalyzingInfixLookupFactory</str>
-  <str name="indexPath">infix_title</str>
-  <str name="dictionaryImpl">DocumentDictionaryFactory</str>
-  <str name="field">title</str>
-  <str name="payloadField">url</str>
-  <str name="suggestAnalyzerFieldType">suggest_text</str>
-  <str name="buildOnStartup">false</str>
-  <str name="buildOnCommit">false</str>
-  </lst>
-  <lst name="suggester">
-  <str name="name">infixUrl</str>
-  <str name="lookupImpl">AnalyzingInfixLookupFactory</str>
-  <str name="indexPath">infix_url</str>
-  <str name="dictionaryImpl">DocumentDictionaryFactory</str>
-  <str name="field">url</str>
-  <str name="payloadField">url</str>
-  <str name="suggestAnalyzerFieldType">suggest_text</str>
-  <str name="buildOnStartup">false</str>
-  <str name="buildOnCommit">false</str>
-  </lst>
+    <lst name="suggester">
+      <str name="name">fuzzyTitle</str>
+      <str name="lookupImpl">FuzzyLookupFactory</str>
+      <str name="storeDir">fuzzy_title</str>
+      <str name="dictionaryImpl">DocumentDictionaryFactory</str>
+      <str name="field">title</str>
+      <str name="payloadField">url</str>
+      <str name="suggestAnalyzerFieldType">suggest_text</str>
+      <str name="buildOnStartup">false</str>
+      <str name="buildOnCommit">false</str>
+    </lst>
+    <lst name="suggester">
+      <str name="name">fuzzyMetaDescription</str>
+      <str name="lookupImpl">FuzzyLookupFactory</str>
+      <str name="storeDir">fuzzy_meta_description</str>
+      <str name="dictionaryImpl">DocumentDictionaryFactory</str>
+      <str name="field">meta_description</str>
+      <str name="payloadField">url</str>
+      <str name="suggestAnalyzerFieldType">suggest_text</str>
+      <str name="buildOnStartup">false</str>
+      <str name="buildOnCommit">false</str>
+    </lst>
+    <lst name="suggester">
+      <str name="name">infixTitle</str>
+      <str name="lookupImpl">AnalyzingInfixLookupFactory</str>
+      <str name="indexPath">infix_title</str>
+      <str name="dictionaryImpl">DocumentDictionaryFactory</str>
+      <str name="field">title</str>
+      <str name="payloadField">url</str>
+      <str name="suggestAnalyzerFieldType">suggest_text</str>
+      <str name="buildOnStartup">false</str>
+      <str name="buildOnCommit">false</str>
+    </lst>
+    <lst name="suggester">
+      <str name="name">infixMetaDescription</str>
+      <str name="lookupImpl">AnalyzingInfixLookupFactory</str>
+      <str name="indexPath">infix_meta_description</str>
+      <str name="dictionaryImpl">DocumentDictionaryFactory</str>
+      <str name="field">meta_description</str>
+      <str name="payloadField">url</str>
+      <str name="suggestAnalyzerFieldType">suggest_text</str>
+      <str name="buildOnStartup">false</str>
+      <str name="buildOnCommit">false</str>
+    </lst>b v
+    <lst name="suggester">
+      <str name="name">infixUrl</str>
+      <str name="lookupImpl">AnalyzingInfixLookupFactory</str>
+      <str name="indexPath">infix_url</str>
+      <str name="dictionaryImpl">DocumentDictionaryFactory</str>
+      <str name="field">url</str>
+      <str name="payloadField">url</str>
+      <str name="suggestAnalyzerFieldType">suggest_text</str>
+      <str name="buildOnStartup">false</str>
+      <str name="buildOnCommit">false</str>
+    </lst>
   </searchComponent>
 
   <!-- Spell Check
