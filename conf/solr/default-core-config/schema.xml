@@ -159,9 +159,9 @@
   <field name="updatedDate" type="date" indexed="true" stored="true"/>
   <field name="url" type="url" indexed="true" stored="true"/>
   <!-- fields for the metatags plugin -->
-  <field name="meta_title" type="text_general" stored="true" indexed="true"/>
-  <field name="meta_description" type="text_general" stored="true" indexed="true"/>
-  <field name="meta_keywords" type="text_general" stored="true" indexed="true"/>
+  <field name="meta_title" type="text_general" stored="true" indexed="true"  multiValued="true"/>
+  <field name="meta_description" type="text_general" stored="true" indexed="true" multiValued="true"/>
+  <field name="meta_keywords" type="text_general" stored="true" indexed="true"  multiValued="true"/>
   <copyField source="anchor" dest="text"/>
   <copyField source="author" dest="text"/>
   <copyField source="content" dest="text"/>

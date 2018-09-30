@@ -74,6 +74,10 @@ for i in $(seq ${ITERATIONS}); do
       NUTCH_CONF_DIR=$CONF_DIR $NUTCH_HOME/runtime/local/bin/nutch solrdedup http://localhost:$SOLR_PORT/solr/$CORE
 done
 
+echo "Running suggetion index rebuild"
+
+curl "http://localhost:$SOLR_PORT/solr/$CORE/suggest?suggest.build=true&wt=json"
+
 echo 'Done with all iterations'
 
 exit 0;

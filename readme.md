@@ -22,7 +22,7 @@ docker run --name openstack-search1 \
 -v mongo-data-config-db:/data/configdb \
 -v solr-data:/var/solr/data \
 --net=docker-bridge \
--p 32769:8983 -it -d -m 8GB --oom-kill-disable \
+-p 32769:8983 -d -m 8GB --oom-kill-disable \
 --restart=always openstack-search
 ````
 
