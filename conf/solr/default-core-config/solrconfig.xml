@@ -862,7 +862,7 @@
       <str name="suggest">true</str>
       <str name="suggest.dictionary">fuzzyTitle</str>
       <str name="suggest.dictionary">infixTitle</str>
-      <str name="suggest.dictionary">fuzzyMetaDescription</str>
+      <str name="suggest.dictionary">freeTextMetaDescription</str>
       <str name="suggest.dictionary">infixMetaDescription</str>
       <str name="suggest.dictionary">infixUrl</str>
       <str name="suggest.onlyMorePopular">true</str>
@@ -934,13 +934,12 @@
       <str name="buildOnCommit">true</str>
     </lst>
     <lst name="suggester">
-      <str name="name">fuzzyMetaDescription</str>
-      <str name="lookupImpl">FuzzyLookupFactory</str>
+      <str name="name">freeTextMetaDescription</str>
+      <str name="lookupImpl">FreeTextLookupFactory</str>
       <str name="storeDir">fuzzy_meta_description</str>
       <str name="dictionaryImpl">DocumentDictionaryFactory</str>
       <str name="field">meta_description</str>
-      <str name="payloadField">url</str>
-      <str name="suggestAnalyzerFieldType">suggest_text</str>
+      <str name="suggestFreeTextAnalyzerFieldType">suggest_text</str>
       <str name="buildOnStartup">true</str>
       <str name="buildOnCommit">true</str>
     </lst>
