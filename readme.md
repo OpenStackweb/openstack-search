@@ -32,6 +32,12 @@ docker run --name openstack-search1 \
 docker exec -it openstack-search1 /bin/bash
 ````
 
+* check process using supervisord
+
+````
+supervisorctl
+````
+
 by default creates 4 cores
 
 # default solr cores

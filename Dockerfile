@@ -3,7 +3,9 @@ FROM ubuntu:18.04
 MAINTAINER  Sebastian Marcet "smarcet@gmail.com"
 
 RUN apt-get update && \
-  apt-get -y install git wget gnupg apt-utils mongodb software-properties-common tar zip curl lsof nano
+  apt-get -y install git wget gnupg apt-utils mongodb software-properties-common tar zip curl lsof nano \
+  apt-transport-https sudo supervisor
+
 RUN add-apt-repository ppa:webupd8team/java && apt-get update
 RUN echo "oracle-java8-installer shared/accepted-oracle-license-v1-1 select true" | debconf-set-selections
 RUN apt-get install -y oracle-java8-installer
@@ -135,36 +137,39 @@ COPY crontab/nutch-tab /etc/cron.d/nutch-tab
  
 # Give execution rights on the cron job
 RUN chmod 0644 /etc/cron.d/nutch-tab
- 
+
+# Apply cron job
+RUN crontab /etc/cron.d/nutch-tab
+
 # Create the log file to be able to run tail
 RUN touch /var/log/cron.log
 
 # create env file for cron
 RUN printenv | sed 's/^\([a-zA-Z0-9_]*\)=\(.*\)$/export \1="\2"/g' > /root/env.sh
 
+# supervisor
+COPY supervisor/supervisor.conf /etc/supervisor/conf.d/supervisor.conf
+
 # entry point
 COPY scripts/docker-entrypoint.sh /usr/local/bin/
-COPY scripts/solr-foreground.sh /usr/local/bin/
 COPY conf/solr/create-nutch-core.sh /usr/local/bin
 
 RUN chmod 777 /usr/local/bin/docker-entrypoint.sh \
     && ln -s /usr/local/bin/docker-entrypoint.sh /
-
-RUN chmod 777 /usr/local/bin/solr-foreground.sh \
-    && ln -s /usr/local/bin/solr-foreground.sh /
 
 RUN chmod 777 /usr/local/bin/create-nutch-core.sh \
     && ln -s /usr/local/bin/create-nutch-core.sh /
 
 ENTRYPOINT ["docker-entrypoint.sh"]
 
-# forward docker log collector
-RUN ln -sf /dev/stdout /var/solr/logs/solr.log
+# forward request and error logs to docker log collector
+RUN touch /var/log/supervisord.log && \
+    ln -sf /dev/stdout /var/log/supervisord.log
 
 STOPSIGNAL SIGTERM
 
 EXPOSE 8983
 
-CMD ["solr-foreground.sh"]
+# Launch supervisor as main container process
 
-
+CMD ["/usr/bin/supervisord"]
