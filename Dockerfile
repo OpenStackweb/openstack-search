@@ -62,12 +62,12 @@ VOLUME /data/db /data/configdb
 
 # solr
 
-ARG SOLR_VERSION=6.6.5
+ARG SOLR_VERSION=6.5.1
 ENV SOLR_VERSION=$SOLR_VERSION
 ENV SOLR_PORT=8983
 ENV SOLR_HOME=/var/solr/data
 ENV SOLR_BIN=/opt/solr/bin
-ENV SOLR_JAVA_MEM="-Xms2g -Xmx2g"
+ENV SOLR_JAVA_MEM="-Xms4g -Xmx4g"
 ENV SOLR_USER="solr" \
     SOLR_UID="8983" \
     SOLR_GROUP="solr" \
