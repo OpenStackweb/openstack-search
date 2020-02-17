@@ -74,7 +74,11 @@ for i in $(seq ${ITERATIONS}); do
       NUTCH_CONF_DIR=$CONF_DIR $NUTCH_HOME/runtime/local/bin/nutch solrdedup http://localhost:$SOLR_PORT/solr/$CORE
 done
 
-echo "Running suggetion index rebuild"
+echo "Running index optimization"
+
+curl "http://localhost:$SOLR_PORT/solr/$CORE/update?optimize=true=true&wt=json"
+
+echo "Running suggestion index rebuild"
 
 curl "http://localhost:$SOLR_PORT/solr/$CORE/suggest?suggest.build=true&wt=json"
 
