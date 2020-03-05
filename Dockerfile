@@ -3,14 +3,14 @@ FROM ubuntu:18.04
 MAINTAINER  Sebastian Marcet "smarcet@gmail.com"
 
 RUN apt-get update && \
-  apt-get -y install git wget gnupg apt-utils mongodb software-properties-common tar zip curl lsof nano \
+  apt-get --no-install-recommends -y install git wget gnupg apt-utils mongodb software-properties-common tar zip curl lsof nano \
   apt-transport-https sudo supervisor
 
 RUN add-apt-repository ppa:webupd8team/java && apt-get update
 RUN echo "oracle-java8-installer shared/accepted-oracle-license-v1-1 select true" | debconf-set-selections
-RUN apt-get install -y oracle-java8-installer
+RUN apt-get --no-install-recommends install -y oracle-java8-installer
 ENV JAVA_HOME /usr/lib/jvm/java-8-oracle/jre/
-RUN apt-get -y install ant
+RUN apt-get --no-install-recommends -y install ant
 
 # nutch
 
