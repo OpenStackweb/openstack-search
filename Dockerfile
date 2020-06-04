@@ -4,7 +4,7 @@ MAINTAINER  Sebastian Marcet "smarcet@gmail.com"
 
 RUN apt-get update && \
   apt-get -y install git wget gnupg apt-utils mongodb software-properties-common tar zip curl lsof nano \
-  apt-transport-https sudo supervisor
+  apt-transport-https sudo supervisor rsyslog htop
 
 RUN add-apt-repository ppa:webupd8team/java && apt-get update
 RUN echo "oracle-java8-installer shared/accepted-oracle-license-v1-1 select true" | debconf-set-selections
@@ -133,13 +133,10 @@ RUN chown -R $SOLR_USER:$SOLR_GROUP ${SOLR_HOME}
 # create cron tab
 
 # Add crontab file in the cron directory
-COPY crontab/nutch-tab /etc/cron.d/nutch-tab
- 
-# Give execution rights on the cron job
-RUN chmod 0644 /etc/cron.d/nutch-tab
+COPY crontab/nutch-tab /etc/cron.d/nutch
 
-# Apply cron job
-RUN crontab /etc/cron.d/nutch-tab
+# Give execution rights on the cron job
+RUN chmod 0644 /etc/cron.d/nutch
 
 # Create the log file to be able to run tail
 RUN touch /var/log/cron.log
