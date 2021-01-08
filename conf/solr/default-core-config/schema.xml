@@ -126,9 +126,11 @@
   </fieldType>
   <fieldType name="suggest_text" class="solr.TextField" positionIncrementGap="100">
     <analyzer>
-      <charFilter class="solr.PatternReplaceCharFilterFactory" pattern="[^a-zA-Z0-9]" replacement=" " />
       <tokenizer class="solr.WhitespaceTokenizerFactory"/>
+      <charFilter class="solr.PatternReplaceCharFilterFactory" pattern="[^a-zA-Z0-9]" replacement=" " />
       <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.LengthFilterFactory" min="2" max="32700"/>
+      <filter class="solr.TruncateTokenFilterFactory" prefixLength="100"/>
     </analyzer>
   </fieldType>
   <field name="_version_" type="long" indexed="true" stored="true"/>

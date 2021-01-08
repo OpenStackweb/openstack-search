@@ -863,7 +863,6 @@
       <str name="suggest.dictionary">fuzzyTitle</str>
       <str name="suggest.dictionary">infixTitle</str>
       <str name="suggest.dictionary">freeTextMetaDescription</str>
-      <str name="suggest.dictionary">infixMetaDescription</str>
       <str name="suggest.dictionary">infixUrl</str>
       <str name="suggest.onlyMorePopular">true</str>
       <str name="suggest.count">10</str>
@@ -949,17 +948,6 @@
       <str name="indexPath">infix_title</str>
       <str name="dictionaryImpl">DocumentDictionaryFactory</str>
       <str name="field">title</str>
-      <str name="payloadField">url</str>
-      <str name="suggestAnalyzerFieldType">suggest_text</str>
-      <str name="buildOnStartup">true</str>
-      <str name="buildOnCommit">true</str>
-    </lst>
-    <lst name="suggester">
-      <str name="name">infixMetaDescription</str>
-      <str name="lookupImpl">AnalyzingInfixLookupFactory</str>
-      <str name="indexPath">infix_meta_description</str>
-      <str name="dictionaryImpl">DocumentDictionaryFactory</str>
-      <str name="field">meta_description</str>
       <str name="payloadField">url</str>
       <str name="suggestAnalyzerFieldType">suggest_text</str>
       <str name="buildOnStartup">true</str>
