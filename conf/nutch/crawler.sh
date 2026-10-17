@@ -1,6 +1,7 @@
 #!/bin/bash
 
 set -e;
+set -o pipefail
 
 CORE=$1
 CRAWL_ID=$2
@@ -36,7 +37,20 @@ then
     echo "DOMAIN not set, skipping sitemap retrieval..."
 else
     echo "trying to get site map for $DOMAIN..."
-    curl $DOMAIN/sitemap.xml | grep -e loc | sed 's|<loc>\(.*\)<\/loc>$|\1|g' > $SEEDS/sitemap.txt
+    # Do not replace accepted seeds with an HTTP error or a partial download.
+    sitemap_tmp=$(mktemp "$SEEDS/.sitemap.XXXXXX")
+    trap 'rm -f -- "$sitemap_tmp"' EXIT
+    curl --fail --silent --show-error --connect-timeout 10 --max-time 120 \
+      "$DOMAIN/sitemap.xml" | grep -e loc | sed 's|<loc>\(.*\)<\/loc>$|\1|g' > "$sitemap_tmp"
+    test -s "$sitemap_tmp"
+    # This legacy extractor requires standalone loc lines. Reject residual XML
+    # rather than injecting malformed seeds when the sitemap format changes.
+    if grep -Eqv '^https?://[^[:space:]<>]+$' "$sitemap_tmp"; then
+      echo "Sitemap contains unsupported seed lines" >&2
+      exit 1
+    fi
+    mv -- "$sitemap_tmp" "$SEEDS/sitemap.txt"
+    trap - EXIT
 fi
 echo "crawling for core $CORE crawl_id $CRAWL_ID seed $SEEDS";
 NUTCH_CONF_DIR=$CONF_DIR $NUTCH_HOME/runtime/local/bin/nutch inject $SEEDS -crawlId $CRAWL_ID
