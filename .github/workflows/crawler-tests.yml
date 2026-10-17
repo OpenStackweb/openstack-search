@@ -1,0 +1,15 @@
+name: Crawler control flow
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  offline-tests:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check shell syntax
+        run: bash -n conf/nutch/crawler.sh
+      - name: Exercise crawler without network or search services
+        run: python3 -m unittest discover -s tests -v

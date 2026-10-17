@@ -1,5 +1,19 @@
 # Docker for Openstack Search Service
 
+# Offline crawler control-flow checks
+
+Run `python3 -m unittest discover -s tests -v` and
+`bash -n conf/nutch/crawler.sh`. The tests run the actual crawler shell script
+against temporary Nutch/curl stubs. They cover normal batches, Nutch's empty
+fetch-list status (1), unexpected generate failures and failures in each later
+pipeline stage. They do not fetch pages or modify an index, and do not establish
+deployed crawler freshness, robots handling or stale-result deletion behavior.
+Sitemap HTTP/download failures, empty/error bodies and unsupported compact XML
+stop before injection and preserve previous seeds. Retrieval has a 10-second
+connection timeout and 120-second overall limit. Seed replacement is atomic.
+The existing extractor still requires standalone loc lines; sitemap indexes and
+XML entity decoding require a separate parser change and acceptance.
+
 # build
 
 ````
