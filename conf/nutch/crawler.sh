@@ -47,8 +47,13 @@ for i in $(seq ${ITERATIONS}); do
       batchId=`date +%s`-$RANDOM
 
       echo "doing generate"
-      NUTCH_CONF_DIR=$CONF_DIR $NUTCH_HOME/runtime/local/bin/nutch generate $commonOptions -topN $TOP -noNorm -noFilter -crawlId $CRAWL_ID -batchId $batchId
-      RETCODE=$?
+      # Nutch uses 1 for an empty fetch list. Capture it in a conditional so
+      # errexit does not bypass the status handling below.
+      if NUTCH_CONF_DIR=$CONF_DIR $NUTCH_HOME/runtime/local/bin/nutch generate $commonOptions -topN $TOP -noNorm -noFilter -crawlId $CRAWL_ID -batchId $batchId; then
+        RETCODE=0
+      else
+        RETCODE=$?
+      fi
       if [ $RETCODE -eq 0 ]; then
         : # ok: no error
       elif [ $RETCODE -eq 1 ]; then
